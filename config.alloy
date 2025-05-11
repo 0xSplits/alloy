@@ -1,0 +1,22 @@
+prometheus.remote_write "default" {
+  endpoint {
+    url = sys.env("PROMETHEUS_REMOTE_WRITE_URL")
+    basic_auth {
+      username = sys.env("PROMETHEUS_USERNAME")
+      password = sys.env("GRAFANA_CLOUD_API_KEY")
+    }
+  }
+}
+
+discovery.dns "server" {
+  type = "A"
+  name = sys.env("SERVER_DISCOVERY_HOST")
+  port = sys.env("SERVER_DISCOVERY_PORT")
+}
+
+prometheus.scrape "server" {
+  targets      = discovery.dns.server.targets
+  metrics_path = "/metrics"
+  job_name     = "server"
+  forward_to   = [ prometheus.remote_write.default.receiver ]
+}
