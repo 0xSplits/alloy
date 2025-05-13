@@ -1,7 +1,7 @@
 discovery.dns "server" {
-  type = "A"
-  name = sys.env("SERVER_DISCOVERY_HOST")
-  port = sys.env("SERVER_DISCOVERY_PORT")
+  type  = "A"
+  names = [sys.env("SERVER_DISCOVERY_HOST")]
+  port  = sys.env("SERVER_DISCOVERY_PORT")
 }
 
 // The server component is resolved via DNS discovery. All IP addresses
