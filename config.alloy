@@ -4,9 +4,9 @@ discovery.dns "server" {
   port = sys.env("SERVER_DISCOVERY_PORT")
 }
 
-# The server component is resolved via DNS discovery. All IP addresses resolving
-# for the given discovery host will be scraped. All metrics are forwarded to the
-# relabelling processor below.
+// The server component is resolved via DNS discovery. All IP addresses
+// resolving for the given discovery host will be scraped. All metrics are
+// forwarded to the relabelling processor below.
 prometheus.scrape "splits_server" {
   targets      = discovery.dns.server.targets
   metrics_path  = "/metrics"
@@ -14,10 +14,10 @@ prometheus.scrape "splits_server" {
   forward_to  = [prometheus.relabel.set_env.receiver]
 }
 
-# This relabelling processor adds the "env" label to all metrics. Any metrics
-# having the "invalid" default value assigned must be fixed by injecting the
-# desired ENVIRONMENT env var into the Alloy process. All metrics are forwarded
-# to the remote write processor below.
+// This relabelling processor adds the "env" label to all metrics. Any metrics
+// having the "invalid" default value assigned must be fixed by injecting the
+// desired ENVIRONMENT env var into the Alloy process. All metrics are forwarded
+// to the remote write processor below.
 prometheus.relabel "set_env" {
   rule {
     action       = "replace"
@@ -27,8 +27,8 @@ prometheus.relabel "set_env" {
   forward_to = [prometheus.remote_write.grafana_cloud.receiver]
 }
 
-# This remote write processor pushes all metrics to Grafana Cloud. The metrics
-# pipeline ends here.
+// This remote write processor pushes all metrics to Grafana Cloud. The metrics
+// pipeline ends here.
 prometheus.remote_write "grafana_cloud" {
   endpoint {
     url = sys.env("PROMETHEUS_REMOTE_WRITE_URL")
