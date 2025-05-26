@@ -251,6 +251,7 @@
         "type": "prometheus",
         "uid": "grafanacloud-prom"
       },
+      "description": "The quantity of throughput stacked by status code, e.g. yellow and red shades imply failure.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -266,7 +267,7 @@
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
-            "fillOpacity": 50,
+            "fillOpacity": 75,
             "gradientMode": "hue",
             "hideFrom": {
               "legend": false,
@@ -275,7 +276,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "smooth",
-            "lineWidth": 1,
+            "lineWidth": 0,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -305,14 +306,14 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/5.*/"
+              "options": "/status code (5\\d{2})/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
                   "fixedColor": "red",
-                  "mode": "fixed"
+                  "mode": "shades"
                 }
               }
             ]
@@ -320,14 +321,14 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/4.*/"
+              "options": "/status code (4\\d{2})/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
                   "fixedColor": "yellow",
-                  "mode": "fixed"
+                  "mode": "shades"
                 }
               }
             ]
@@ -335,14 +336,14 @@
           {
             "matcher": {
               "id": "byRegexp",
-              "options": "/2.*|3.*/"
+              "options": "/status code (2\\d{2}|3\\d{2})/"
             },
             "properties": [
               {
                 "id": "color",
                 "value": {
                   "fixedColor": "green",
-                  "mode": "fixed"
+                  "mode": "shades"
                 }
               }
             ]
@@ -387,9 +388,11 @@
         "type": "prometheus",
         "uid": "grafanacloud-prom"
       },
+      "description": "The desirable and failed user experience in terms of latency, e.g. everything above 500 ms is a failure.",
       "fieldConfig": {
         "defaults": {
           "color": {
+            "fixedColor": "green",
             "mode": "thresholds"
           },
           "custom": {
@@ -416,7 +419,7 @@
               "type": "linear"
             },
             "showPoints": "never",
-            "spanNulls": false,
+            "spanNulls": true,
             "stacking": {
               "group": "A",
               "mode": "none"
@@ -532,6 +535,300 @@
       ],
       "title": "Request Latency Percentiles",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The quantity of failed requests stacked by status code.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "fixed"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 75,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 0,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "normal"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/status code (5\\d{2})/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "red",
+                  "mode": "shades"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/status code (4\\d{2})/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "yellow",
+                  "mode": "shades"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byRegexp",
+              "options": "/status code (2\\d{2}|3\\d{2})/"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "green",
+                  "mode": "shades"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 18
+      },
+      "id": 5,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0-88106",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "sum by(code) (rate(http_requests_total{job=\"splits_server\", env=\"$env\", code=~\"5..|4..\"}[5m]))",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "status code {{code}}",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        }
+      ],
+      "title": "Failures per Second",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The failed user experience in terms of latency.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "fixedColor": "green",
+            "mode": "thresholds"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "scheme",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "#EAB839",
+                "value": 0.25
+              },
+              {
+                "color": "red",
+                "value": 0.5
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 18
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0-88106",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "histogram_quantile(\n    0.99, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\", code=~\"4..|5..\"}[5m])\n    )\n)\n",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": false,
+          "legendFormat": "99th percentile",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "histogram_quantile(\n    0.95, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\", code=~\"4..|5..\"}[5m])\n    )\n)",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": false,
+          "legendFormat": "95th percentile",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "histogram_quantile(\n    0.90, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\", code=~\"4..|5..\"}[5m])\n    )\n)",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": false,
+          "legendFormat": "90th percentile",
+          "range": true,
+          "refId": "C",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "expr": "histogram_quantile(\n    0.50, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\", code=~\"4..|5..\"}[5m])\n    )\n)",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": false,
+          "legendFormat": "50th percentile",
+          "range": true,
+          "refId": "D",
+          "useBackend": false
+        }
+      ],
+      "title": "Failure Latency Percentiles",
+      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -564,12 +861,12 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-3d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Server",
   "uid": "2d6a0be4-e167-46ef-bca3-ec1e25228581",
-  "version": 23
+  "version": 28
 }
