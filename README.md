@@ -5,7 +5,21 @@ cloud environments.
 
 ### Configuration
 
-All configuration and processing is defined in [config.alloy](./config.alloy).
+All configuration and processing is defined in the [config](./config/) folder.
+Separate config files can be organized for Alloy's processor pipelines for a
+better overview. Note that config files must be arranged in reverse order of the
+processor dependency graph. E.g. the remote write config must be the first for
+Alloy to read, because remote write is the last step for our metrics to be send
+to Grafana Cloud.
+
+```
+config
+├── 000_remote_write.alloy
+├── 001_relabel.alloy
+├── 002_scrape.alloy
+└── 003_discovery.alloy
+```
+
 We use DNS for service discovery to scrape targets dynamically. We apply certain
 relabelling operations to streamline metric labels before storing them in
 Grafana Cloud. The following environment variables are required for running the
@@ -15,6 +29,8 @@ Alloy container.
 - `GRAFANA_CLOUD_API_KEY` - the API key of the Grafana Cloud metrics backend
 - `PROMETHEUS_REMOTE_WRITE_URL` - the URL of the Grafana Cloud metrics backend
 - `PROMETHEUS_USERNAME` - the basic auth username of the Grafana Cloud metrics backend
+- `WORKER_DISCOVERY_HOST` - the host name of the DNS discovery service for the worker component
+- `WORKER_DISCOVERY_PORT` - the port number of the worker components
 - `SERVER_DISCOVERY_HOST` - the host name of the DNS discovery service for the server component
 - `SERVER_DISCOVERY_PORT` - the port number of the server components
 
