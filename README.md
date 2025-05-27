@@ -47,7 +47,15 @@ Docker image to the configured [Amazon ECR].
 v1.8.3-ffce1e2
 ```
 
+### Development
+
+We use Alloy's [VS Code Extension] for syntax highlighting and formatting of the
+`.alloy` config files. Just note that this extension requires the Alloy binary
+to be [installed] locally in order to work properly.
+
 [Amazon ECR]: https://docs.aws.amazon.com/ecr
 [Github Action]: .github/workflows/docker-release.yaml
 [Grafana Alloy]: https://grafana.com/docs/alloy/latest
 [Semver Format]: https://semver.org
+[VS Code Extension]: https://github.com/grafana/vscode-alloy
+[installed]: https://grafana.com/docs/alloy/latest/set-up/install
