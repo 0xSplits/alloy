@@ -237,7 +237,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 * avg_over_time(\n    (\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", middleware=\"root\", code!~\"(401|408|429|5..)\"}[5m])) OR vector(0)) # record the amount of successful requests, or 0\n      /\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", middleware=\"root\", code!=\"\"}[5m])) OR vector(1)) # record the amount of all requests, or 1\n    )[1d:]\n)",
+          "expr": "100 * avg_over_time(\n    (\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", middleware=\"root\", code=~\"2..|3..\"}[5m])) OR vector(0)) # record the amount of successful requests, or 0\n      /\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", middleware=\"root\", code!=\"\"}[5m])) OR vector(1)) # record the amount of all requests, or 1\n    )[1d:]\n)",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
@@ -279,7 +279,8 @@
             "lineWidth": 0,
             "pointSize": 5,
             "scaleDistribution": {
-              "type": "linear"
+              "log": 2,
+              "type": "log"
             },
             "showPoints": "never",
             "spanNulls": false,
@@ -291,6 +292,7 @@
               "mode": "off"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
           "noValue": "0",
           "thresholds": {
@@ -541,7 +543,7 @@
         "type": "prometheus",
         "uid": "grafanacloud-prom"
       },
-      "description": "The quantity of failed requests stacked by status code.",
+      "description": "The quantity of failed requests stacked by status code, e.g. all 400 and 500 status codes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -569,7 +571,8 @@
             "lineWidth": 0,
             "pointSize": 5,
             "scaleDistribution": {
-              "type": "linear"
+              "log": 2,
+              "type": "log"
             },
             "showPoints": "never",
             "spanNulls": false,
@@ -581,6 +584,7 @@
               "mode": "off"
             }
           },
+          "decimals": 3,
           "mappings": [],
           "noValue": "0",
           "thresholds": {
@@ -664,8 +668,8 @@
       "targets": [
         {
           "disableTextWrap": false,
-          "editorMode": "builder",
-          "expr": "sum by(code) (rate(http_requests_total{job=\"splits_server\", env=\"$env\", code=~\"5..|4..\"}[5m]))",
+          "editorMode": "code",
+          "expr": "sum by(code) (rate(http_requests_total{job=\"splits_server\", env=\"$env\", code=~\"4..|5..\"}[5m]))",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
           "legendFormat": "status code {{code}}",
@@ -682,7 +686,7 @@
         "type": "prometheus",
         "uid": "grafanacloud-prom"
       },
-      "description": "The failed user experience in terms of latency.",
+      "description": "The failed user experience in terms of latency, e.g. all 400 and 500 status codes.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -861,12 +865,12 @@
     ]
   },
   "time": {
-    "from": "now-3d",
+    "from": "now-4d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Server",
   "uid": "2d6a0be4-e167-46ef-bca3-ec1e25228581",
-  "version": 28
+  "version": 31
 }
