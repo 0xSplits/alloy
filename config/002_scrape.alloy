@@ -1,0 +1,19 @@
+// The worker component is resolved via DNS discovery. All IP addresses
+// resolving for the given discovery host will be scraped. All metrics are
+// forwarded to the relabelling processor below.
+prometheus.scrape "splits_worker" {
+	targets      = discovery.dns.worker.targets
+	metrics_path = "/metrics"
+	job_name     = "splits_worker"
+	forward_to   = [prometheus.relabel.set_env.receiver]
+}
+
+// The server component is resolved via DNS discovery. All IP addresses
+// resolving for the given discovery host will be scraped. All metrics are
+// forwarded to the relabelling processor below.
+prometheus.scrape "splits_server" {
+	targets      = discovery.dns.server.targets
+	metrics_path = "/metrics"
+	job_name     = "splits_server"
+	forward_to   = [prometheus.relabel.set_env.receiver]
+}

@@ -1,0 +1,41 @@
+// This relabelling processor adds the "env" label to all metrics. Any metrics
+// having the "invalid" default value assigned must be fixed by injecting the
+// desired ENVIRONMENT env var into the Alloy process. All metrics are forwarded
+// to the remote write processor below.
+prometheus.relabel "set_env" {
+	rule {
+		action       = "replace"
+		target_label = "env"
+		replacement  = coalesce(sys.env("ENVIRONMENT"), "invalid")
+	}
+
+	forward_to = [prometheus.relabel.fix_env.receiver]
+}
+
+// This relabelling processor rewrites some values of the "env" label to match
+// our environment conventions. NOTE that this processor should be temporary.
+// As soon as those environment conventions are streamlined across the stack, we
+// can drop the rules below.
+//
+//     dev     ->    testing
+//     beta    ->    staging
+//
+prometheus.relabel "fix_env" {
+	rule {
+		action        = "replace"
+		source_labels = ["env"]
+		regex         = "dev"
+		replacement   = "testing"
+		target_label  = "env"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["env"]
+		regex         = "beta"
+		replacement   = "staging"
+		target_label  = "env"
+	}
+
+	forward_to = [prometheus.remote_write.grafana_cloud.receiver]
+}

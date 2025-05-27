@@ -1,0 +1,12 @@
+// This remote write processor pushes all metrics to Grafana Cloud. The metrics
+// pipeline ends here.
+prometheus.remote_write "grafana_cloud" {
+	endpoint {
+		url = sys.env("PROMETHEUS_REMOTE_WRITE_URL")
+
+		basic_auth {
+			username = sys.env("PROMETHEUS_USERNAME")
+			password = sys.env("GRAFANA_CLOUD_API_KEY")
+		}
+	}
+}
