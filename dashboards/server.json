@@ -126,7 +126,7 @@
           "disableTextWrap": false,
           "editorMode": "code",
           "exemplar": false,
-          "expr": "100 * avg_over_time(\n  max by (env, job) (\n    avg_over_time(\n      (\n        up{env=\"$env\", job=\"splits_server\"} # record 1 if the service is up\n        or\n        (absent(up{env=\"$env\", job=\"splits_server\"}) * 0) # record 0 if teh service is down\n      )[5m:]\n    )\n  )[1d:]\n)",
+          "expr": "100 * avg_over_time(\n  max by (env, job) (\n    avg_over_time(\n      (\n        up{env=\"$env\", job=\"splits_server\"} # record 1 if the service is up\n        or\n        (absent(up{env=\"$env\", job=\"splits_server\"}) * 0) # record 0 if the service is down\n      )[5m:]\n    )\n  )[1d:]\n)",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": true,
@@ -865,12 +865,12 @@
     ]
   },
   "time": {
-    "from": "now-4d",
+    "from": "now-5d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "Server",
   "uid": "2d6a0be4-e167-46ef-bca3-ec1e25228581",
-  "version": 31
+  "version": 33
 }
