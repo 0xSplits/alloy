@@ -8,13 +8,13 @@ prometheus.exporter.cloudwatch "ecs_service" {
 
 		metric {
 			name       = "CPUUtilization"
-			statistics = ["Average"]
+			statistics = ["Average", "Maximum"]
 			period     = "5m"
 		}
 
 		metric {
 			name       = "MemoryUtilization"
-			statistics = ["Average"]
+			statistics = ["Average", "Maximum"]
 			period     = "5m"
 		}
 	}
