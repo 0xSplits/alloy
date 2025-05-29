@@ -1,0 +1,21 @@
+prometheus.exporter.cloudwatch "ecs_service" {
+	sts_region = sys.env("AWS_REGION")
+
+	discovery {
+		type                        = "AWS/ECS"
+		regions                     = [sys.env("AWS_REGION")]
+		dimension_name_requirements = ["ServiceName"]
+
+		metric {
+			name       = "CPUUtilization"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "MemoryUtilization"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+	}
+}

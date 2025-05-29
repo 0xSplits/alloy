@@ -1,3 +1,12 @@
+// The ECS containers are resolved via CloudWatch discovery. All containers
+// resolving for the given discovery type will be scraped. All metrics are
+// forwarded to the relabelling processor below.
+prometheus.scrape "ecs_container" {
+	targets    = prometheus.exporter.cloudwatch.ecs_service.targets
+	job_name   = "ecs_service"
+	forward_to = [prometheus.relabel.set_env.receiver]
+}
+
 // The worker component is resolved via DNS discovery. All IP addresses
 // resolving for the given discovery host will be scraped. All metrics are
 // forwarded to the relabelling processor below.
