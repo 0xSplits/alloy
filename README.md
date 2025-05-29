@@ -17,7 +17,8 @@ config
 ├── 000_remote_write.alloy
 ├── 001_relabel.alloy
 ├── 002_scrape.alloy
-└── 003_discovery.alloy
+├── 003_discovery_cloudwatch.alloy
+└── 003_discovery_dns.alloy
 ```
 
 We use DNS for service discovery to scrape targets dynamically. We apply certain
@@ -25,6 +26,7 @@ relabelling operations to streamline metric labels before storing them in
 Grafana Cloud. The following environment variables are required for running the
 Alloy container.
 
+- `AWS_REGION` - the AWS region of the scraped deployment infrastructure
 - `ENVIRONMENT` - the environment name of the scraped deployment infrastructure
 - `GRAFANA_CLOUD_API_KEY` - the API key of the Grafana Cloud metrics backend
 - `PROMETHEUS_REMOTE_WRITE_URL` - the URL of the Grafana Cloud metrics backend
