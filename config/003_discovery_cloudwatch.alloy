@@ -5,6 +5,9 @@ prometheus.exporter.cloudwatch "ecs_service" {
 		type                        = "AWS/ECS"
 		regions                     = [sys.env("AWS_REGION")]
 		dimension_name_requirements = ["ClusterName", "ServiceName"]
+		search_tags                 = {
+			"environment" = sys.env("ENVIRONMENT"),
+		}
 
 		metric {
 			name       = "CPUUtilization"
