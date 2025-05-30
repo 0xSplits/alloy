@@ -37,5 +37,86 @@ prometheus.relabel "fix_env" {
 		target_label  = "env"
 	}
 
+	forward_to = [prometheus.relabel.remove_labels.receiver]
+}
+
+// Remove extraneous labels that may be added by certain exporters/jobs. E.g.
+// CloudWatch specific labels may increase label cardinality for no reason, so
+// we try to reduce costs.
+prometheus.relabel "remove_labels" {
+	rule {
+		action        = "replace"
+		source_labels = ["job", "name"]
+		separator     = ";"
+		regex         = "integrations/cloudwatch;(.*)"
+		replacement   = ""
+		target_label  = "name"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["job", "account_alias"]
+		separator     = ";"
+		regex         = "integrations/cloudwatch;(.*)"
+		replacement   = ""
+		target_label  = "account_alias"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["job", "region"]
+		separator     = ";"
+		regex         = "integrations/cloudwatch;(.*)"
+		replacement   = ""
+		target_label  = "region"
+	}
+
+	forward_to = [prometheus.relabel.create_labels.receiver]
+}
+
+// Create labels based on regular expressions to make it easier for certain
+// dashboard queries. E.g. provide consistent service labels for our software
+// components: server, worker, alloy, etc.
+prometheus.relabel "create_labels" {
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_ServiceName"]
+		regex         = ".*"
+		replacement   = "server"
+		target_label  = "service"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_ServiceName"]
+		regex         = ".*-alloy$"
+		replacement   = "alloy"
+		target_label  = "service"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_ServiceName"]
+		regex         = ".*-graphql$"
+		replacement   = "graphql"
+		target_label  = "service"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_ServiceName"]
+		regex         = ".*otel-collector.*"
+		replacement   = "otel-collector"
+		target_label  = "service"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_ServiceName"]
+		regex         = ".*worker.*"
+		replacement   = "worker"
+		target_label  = "service"
+	}
+
 	forward_to = [prometheus.remote_write.grafana_cloud.receiver]
 }
