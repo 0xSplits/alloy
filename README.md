@@ -36,6 +36,28 @@ Alloy container.
 - `SERVER_DISCOVERY_HOST` - the host name of the DNS discovery service for the server component
 - `SERVER_DISCOVERY_PORT` - the port number of the server components
 
+### Discovery
+
+We are using the [CloudWatch Exporter] for metrics discovery of managed AWS
+services like ECS containers and RDS instances. Note that it is best practice to
+filter for AWS resource tags, e.g. `environment`, so that we can process metrics
+for the environment that those metrics are associated with. Also note that this
+requires the respective AWS resources to be tagged accordingly. Using the AWS
+CLI command below we can query the available metrics names and dimension
+requirements. This helps to identify the metrics that we could be interested to
+scrape.
+
+```
+aws cloudwatch list-metrics --namespace "AWS/RDS" --region us-west-2
+```
+
+Piping the results from the above CLI command into `jq` may help to filter for
+the metrics and their respective dimensions that we are interested in to scrape.
+
+```
+jq '[.Metrics[] | select(.Dimensions[]? | select(.Name == "Role" and .Value == "READER"))]'
+```
+
 ### Releases
 
 In order to update the Docker image, prepare all desired changes within the
@@ -61,3 +83,4 @@ to be [installed] locally in order to work properly.
 [Semver Format]: https://semver.org
 [VS Code Extension]: https://github.com/grafana/vscode-alloy
 [installed]: https://grafana.com/docs/alloy/latest/set-up/install
+[CloudWatch Exporter]: https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.exporter.cloudwatch

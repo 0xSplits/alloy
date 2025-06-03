@@ -22,3 +22,64 @@ prometheus.exporter.cloudwatch "ecs_service" {
 		}
 	}
 }
+
+prometheus.exporter.cloudwatch "rds_instance" {
+	sts_region = sys.env("AWS_REGION")
+
+	discovery {
+		type                        = "AWS/RDS"
+		regions                     = [sys.env("AWS_REGION")]
+		dimension_name_requirements = ["EngineName"]
+		search_tags                 = {
+			"environment" = sys.env("ENVIRONMENT"),
+		}
+
+		metric {
+			name       = "CPUUtilization"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "FreeableMemory"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "ReadLatency"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "WriteLatency"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "ReadThroughput"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "WriteThroughput"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "DatabaseConnections"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "FreeStorageSpace"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+	}
+}

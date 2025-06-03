@@ -7,6 +7,15 @@ prometheus.scrape "ecs_service" {
 	forward_to = [prometheus.relabel.set_env.receiver]
 }
 
+// The RDS instances are resolved via CloudWatch discovery. All instances
+// resolving for the given discovery type will be scraped. All metrics are
+// forwarded to the relabelling processor below.
+prometheus.scrape "rds_instance" {
+	targets    = prometheus.exporter.cloudwatch.rds_instance.targets
+	job_name   = "rds_instance"
+	forward_to = [prometheus.relabel.set_env.receiver]
+}
+
 // The worker component is resolved via DNS discovery. All IP addresses
 // resolving for the given discovery host will be scraped. All metrics are
 // forwarded to the relabelling processor below.
