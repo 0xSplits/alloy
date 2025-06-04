@@ -29,7 +29,7 @@ prometheus.exporter.cloudwatch "rds_instance" {
 	discovery {
 		type                        = "AWS/RDS"
 		regions                     = [sys.env("AWS_REGION")]
-		dimension_name_requirements = ["EngineName"]
+		dimension_name_requirements = ["DBInstanceIdentifier"]
 		search_tags                 = {
 			"environment" = sys.env("ENVIRONMENT"),
 		}
