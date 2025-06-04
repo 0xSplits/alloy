@@ -15,7 +15,7 @@ prometheus.relabel "set_env" {
 // Remove extraneous labels that may be added by certain exporters/jobs. E.g.
 // CloudWatch specific labels may increase label cardinality for no reason, so
 // we try to reduce costs.
-prometheus.relabel "remove_labels" {
+prometheus.relabel "delete_cloudwatch_labels" {
 	rule {
 		action        = "replace"
 		source_labels = ["job", "name"]
@@ -46,10 +46,10 @@ prometheus.relabel "remove_labels" {
 	forward_to = [prometheus.relabel.set_env.receiver]
 }
 
-// Create labels based on regular expressions to make it easier for certain
-// dashboard queries. E.g. provide consistent service labels for our software
-// components: server, worker, alloy, etc.
-prometheus.relabel "create_labels" {
+// Create labels based on ECS dimensions to make it easier for certain dashboard
+// queries. E.g. provide consistent service labels for our software components:
+// server, worker, alloy, etc.
+prometheus.relabel "create_ecs_labels" {
 	rule {
 		action        = "replace"
 		source_labels = ["dimension_ServiceName"]
@@ -90,5 +90,21 @@ prometheus.relabel "create_labels" {
 		target_label  = "service"
 	}
 
-	forward_to = [prometheus.relabel.remove_labels.receiver]
+	forward_to = [prometheus.relabel.delete_cloudwatch_labels.receiver]
+}
+
+// Create labels based on RDS dimensions to make it easier for certain dashboard
+// queries. E.g. provide consistent service labels for our software components.
+// Since there is only one logical database for the server at the moment, we
+// only apply one service label.
+prometheus.relabel "create_rds_labels" {
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_DBInstanceIdentifier"]
+		regex         = ".*"
+		replacement   = "server"
+		target_label  = "service"
+	}
+
+	forward_to = [prometheus.relabel.delete_cloudwatch_labels.receiver]
 }
