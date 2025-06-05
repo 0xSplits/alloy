@@ -72,7 +72,6 @@
             }
           },
           "decimals": 2,
-          "displayName": "availability in %",
           "fieldMinMax": false,
           "mappings": [],
           "max": 100,
@@ -92,7 +91,8 @@
                 "value": 99.9
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -131,7 +131,7 @@
           "hide": false,
           "includeNullMetadata": true,
           "instant": true,
-          "legendFormat": "__auto",
+          "legendFormat": "availability",
           "range": true,
           "refId": "A",
           "useBackend": false
@@ -145,7 +145,7 @@
         "type": "prometheus",
         "uid": "grafanacloud-prom"
       },
-      "description": "The 24 hour rolling percentage of usability considering quality of service, e.g. successful vs all requests.",
+      "description": "The 24 hour rolling percentage of usability considering quality of service, including request latency.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -190,7 +190,6 @@
             }
           },
           "decimals": 2,
-          "displayName": "usability in %",
           "mappings": [],
           "max": 100,
           "min": 0,
@@ -209,7 +208,8 @@
                 "value": 99.9
               }
             ]
-          }
+          },
+          "unit": "percent"
         },
         "overrides": []
       },
@@ -219,7 +219,7 @@
         "x": 12,
         "y": 0
       },
-      "id": 2,
+      "id": 7,
       "options": {
         "legend": {
           "calcs": [],
@@ -237,8 +237,8 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 * avg_over_time(\n    (\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", middleware=\"root\", code=~\"2..|3..\"}[5m])) OR vector(0)) # record the amount of successful requests, or 0\n      /\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", middleware=\"root\", code!=\"\"}[5m])) OR vector(1)) # record the amount of all requests, or 1\n    )[1d:]\n)",
-          "legendFormat": "__auto",
+          "expr": "100 * (\n  avg_over_time(\n    (\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", route!~\"/api/admin/*\", middleware=\"root\", code=~\"2..|3..|404\"}[5m])) OR vector(0)) # record the amount of successful requests, or 0\n      /\n      (sum(rate(http_request_duration_seconds_count{job=\"splits_server\", env=\"$env\", route!~\"/api/admin/*\", middleware=\"root\", code!=\"\"}[5m])) OR vector(1)) # record the amount of all requests, or 1\n    )[1d:]\n  )\n  -\n  avg_over_time(\n    (\n      (\n        sum(rate(http_request_duration_seconds_bucket{job=\"splits_server\", route!~\"/api/admin/*\", middleware=\"root\", env=\"$env\", le=\"+Inf\"}[5m]))\n        -\n        sum(rate(http_request_duration_seconds_bucket{job=\"splits_server\", route!~\"/api/admin/*\", middleware=\"root\", env=\"$env\", le=\"0.5\"}[5m]))\n      )\n      /\n      sum(rate(http_request_duration_seconds_bucket{job=\"splits_server\", route!~\"/api/admin/*\", middleware=\"root\", env=\"$env\", le=\"+Inf\"}[5m]))\n    )[1d:]\n  )\n)",
+          "legendFormat": "usability",
           "range": true,
           "refId": "A"
         }
@@ -477,7 +477,7 @@
         {
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "histogram_quantile(\n    0.99, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\"}[5m])\n    )\n)\n",
+          "expr": "histogram_quantile(\n    0.99, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", route!~\"/api/admin/*\", middleware=\"root\"}[5m])\n    )\n)\n",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": false,
@@ -493,7 +493,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "histogram_quantile(\n    0.95, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\"}[5m])\n    )\n)",
+          "expr": "histogram_quantile(\n    0.95, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", route!~\"/api/admin/*\", middleware=\"root\"}[5m])\n    )\n)",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": false,
@@ -509,7 +509,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "histogram_quantile(\n    0.90, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\"}[5m])\n    )\n)",
+          "expr": "histogram_quantile(\n    0.90, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", route!~\"/api/admin/*\", middleware=\"root\"}[5m])\n    )\n)",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": false,
@@ -525,7 +525,7 @@
           },
           "disableTextWrap": false,
           "editorMode": "code",
-          "expr": "histogram_quantile(\n    0.50, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", middleware=\"root\"}[5m])\n    )\n)",
+          "expr": "histogram_quantile(\n    0.50, \n    sum by(le) (\n        rate(http_request_duration_seconds_bucket{job=\"splits_server\", env=\"$env\", route!~\"/api/admin/*\", middleware=\"root\"}[5m])\n    )\n)",
           "fullMetaSearch": false,
           "hide": false,
           "includeNullMetadata": false,
@@ -833,6 +833,234 @@
       ],
       "title": "Failure Latency Percentiles",
       "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The average CPU utilization of the server containers over a 5 minute rolling window.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0-88106",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "avg_over_time(aws_ecs_cpuutilization_average{env=\"$env\", service=\"server\"}[5m])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "average",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "avg_over_time(aws_ecs_cpuutilization_maximum{env=\"$env\", service=\"server\"}[5m])",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "maximum",
+          "range": true,
+          "refId": "B"
+        }
+      ],
+      "title": "CPU Utilization",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "description": "The average Memory utilization of the server containers over a 5 minute rolling window.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 25,
+            "gradientMode": "hue",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 27
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.1.0-88106",
+      "targets": [
+        {
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "avg_over_time(aws_ecs_memory_utilization_average{env=\"$env\", service=\"server\"}[5m])",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "legendFormat": "average",
+          "range": true,
+          "refId": "A",
+          "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "disableTextWrap": false,
+          "editorMode": "builder",
+          "expr": "avg_over_time(aws_ecs_memory_utilization_maximum{env=\"$env\", service=\"server\"}[5m])",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "maximum",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
+        }
+      ],
+      "title": "Memory Utilization",
+      "type": "timeseries"
     }
   ],
   "preload": false,
@@ -865,12 +1093,12 @@
     ]
   },
   "time": {
-    "from": "now-5d",
+    "from": "now-7d",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Server",
+  "title": "Service",
   "uid": "2d6a0be4-e167-46ef-bca3-ec1e25228581",
-  "version": 33
+  "version": 43
 }
