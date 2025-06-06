@@ -46,22 +46,6 @@ prometheus.relabel "delete_cloudwatch_labels" {
 	forward_to = [prometheus.relabel.set_env.receiver]
 }
 
-// Create labels based on CodePipeline dimensions to make it easier for certain
-// dashboard queries. E.g. provide consistent service labels for our software
-// components. Since there is only one pipeline for the server at the moment, we
-// only apply one service label.
-prometheus.relabel "create_acp_labels" {
-	rule {
-		action        = "replace"
-		source_labels = ["dimension_Pipeline"]
-		regex         = ".*"
-		replacement   = "server"
-		target_label  = "service"
-	}
-
-	forward_to = [prometheus.relabel.delete_cloudwatch_labels.receiver]
-}
-
 // Create labels based on ECS dimensions to make it easier for certain dashboard
 // queries. E.g. provide consistent service labels for our software components:
 // server, worker, alloy, etc.
