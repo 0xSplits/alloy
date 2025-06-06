@@ -1,3 +1,15 @@
+// The code pipelines are resolved via CloudWatch discovery. All code pipelines
+// resolving for the given discovery type will be scraped. All metrics are
+// forwarded to the relabelling processors as shown below.
+//
+//     create_acp_labels  ->  delete_cloudwatch_labels  ->  set_env  ->  grafana_cloud
+//
+prometheus.scrape "acp_service" {
+	targets    = prometheus.exporter.cloudwatch.acp_service.targets
+	job_name   = "acp_service"
+	forward_to = [prometheus.relabel.create_acp_labels.receiver]
+}
+
 // The ECS containers are resolved via CloudWatch discovery. All containers
 // resolving for the given discovery type will be scraped. All metrics are
 // forwarded to the relabelling processors as shown below.
