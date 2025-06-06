@@ -1,22 +1,3 @@
-prometheus.exporter.cloudwatch "acp_service" {
-	sts_region = sys.env("AWS_REGION")
-
-	discovery {
-		type                        = "AWS/CodePipeline"
-		regions                     = [sys.env("AWS_REGION")]
-		dimension_name_requirements = ["Pipeline"]
-		search_tags                 = {
-			"environment" = sys.env("ENVIRONMENT"),
-		}
-
-		metric {
-			name       = "PipelineDuration"
-			statistics = ["Average", "Maximum"]
-			period     = "5m"
-		}
-	}
-}
-
 prometheus.exporter.cloudwatch "ecs_service" {
 	sts_region = sys.env("AWS_REGION")
 
