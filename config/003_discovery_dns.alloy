@@ -1,11 +1,17 @@
-discovery.dns "worker" {
-	type  = "A"
-	names = [sys.env("WORKER_DISCOVERY_HOST")]
-	port  = sys.env("WORKER_DISCOVERY_PORT")
-}
-
 discovery.dns "server" {
 	type  = "A"
 	names = [sys.env("SERVER_DISCOVERY_HOST")]
 	port  = sys.env("SERVER_DISCOVERY_PORT")
+}
+
+discovery.dns "specta" {
+	type  = "A"
+	names = [sys.env("SPECTA_DISCOVERY_HOST")]
+	port  = sys.env("SPECTA_DISCOVERY_PORT")
+}
+
+discovery.dns "worker" {
+	type  = "A"
+	names = [sys.env("WORKER_DISCOVERY_HOST")]
+	port  = sys.env("WORKER_DISCOVERY_PORT")
 }
