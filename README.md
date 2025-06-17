@@ -3,6 +3,8 @@
 This repository contains the pinned Docker version of [Grafana Alloy] as used in all
 cloud environments.
 
+![Observability Stack](.github/assets/Observability-Stack.svg)
+
 ### Configuration
 
 All configuration and processing is defined in the [config](./config/) folder.
