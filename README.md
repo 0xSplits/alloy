@@ -31,10 +31,12 @@ Alloy container.
 - `GRAFANA_CLOUD_API_KEY` - the API key of the Grafana Cloud metrics backend
 - `PROMETHEUS_REMOTE_WRITE_URL` - the URL of the Grafana Cloud metrics backend
 - `PROMETHEUS_USERNAME` - the basic auth username of the Grafana Cloud metrics backend
-- `WORKER_DISCOVERY_HOST` - the host name of the DNS discovery service for the worker component
-- `WORKER_DISCOVERY_PORT` - the port number of the worker components
 - `SERVER_DISCOVERY_HOST` - the host name of the DNS discovery service for the server component
 - `SERVER_DISCOVERY_PORT` - the port number of the server components
+- `SPECTA_DISCOVERY_HOST` - the host name of the DNS discovery service for the specta component
+- `SPECTA_DISCOVERY_HOST` - the port number of the specta components
+- `WORKER_DISCOVERY_HOST` - the host name of the DNS discovery service for the worker component
+- `WORKER_DISCOVERY_PORT` - the port number of the worker components
 
 ### Discovery
 

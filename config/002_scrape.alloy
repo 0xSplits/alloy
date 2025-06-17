@@ -22,19 +22,6 @@ prometheus.scrape "rds_instance" {
 	forward_to = [prometheus.relabel.create_rds_labels.receiver]
 }
 
-// The worker component is resolved via DNS discovery. All IP addresses
-// resolving for the given discovery host will be scraped. All metrics are
-// forwarded to the relabelling processors as shown below.
-//
-//     set_env  ->  grafana_cloud
-//
-prometheus.scrape "splits_worker" {
-	targets      = discovery.dns.worker.targets
-	metrics_path = "/metrics"
-	job_name     = "splits_worker"
-	forward_to   = [prometheus.relabel.set_env.receiver]
-}
-
 // The server component is resolved via DNS discovery. All IP addresses
 // resolving for the given discovery host will be scraped. All metrics are
 // forwarded to the relabelling processors as shown below.
@@ -45,5 +32,31 @@ prometheus.scrape "splits_server" {
 	targets      = discovery.dns.server.targets
 	metrics_path = "/metrics"
 	job_name     = "splits_server"
+	forward_to   = [prometheus.relabel.set_env.receiver]
+}
+
+// The specta component is resolved via DNS discovery. All IP addresses
+// resolving for the given discovery host will be scraped. All metrics are
+// forwarded to the relabelling processors as shown below.
+//
+//     set_env  ->  grafana_cloud
+//
+prometheus.scrape "splits_specta" {
+	targets      = discovery.dns.specta.targets
+	metrics_path = "/metrics"
+	job_name     = "splits_specta"
+	forward_to   = [prometheus.relabel.set_env.receiver]
+}
+
+// The worker component is resolved via DNS discovery. All IP addresses
+// resolving for the given discovery host will be scraped. All metrics are
+// forwarded to the relabelling processors as shown below.
+//
+//     set_env  ->  grafana_cloud
+//
+prometheus.scrape "splits_worker" {
+	targets      = discovery.dns.worker.targets
+	metrics_path = "/metrics"
+	job_name     = "splits_worker"
 	forward_to   = [prometheus.relabel.set_env.receiver]
 }
