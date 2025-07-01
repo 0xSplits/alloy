@@ -1,4 +1,4 @@
-FROM grafana/alloy:v1.9.1
+FROM grafana/alloy:v1.9.2
 RUN rm -rf /etc/alloy/*
 COPY config/ /etc/alloy/
 CMD ["run", "--server.http.listen-addr=0.0.0.0:12345", "/etc/alloy/"]
