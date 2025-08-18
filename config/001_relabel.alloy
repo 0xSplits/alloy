@@ -61,8 +61,8 @@ prometheus.relabel "create_ecs_labels" {
 	rule {
 		action        = "replace"
 		source_labels = ["dimension_ServiceName"]
-		regex         = ".*-graphql$"
-		replacement   = "graphql"
+		regex         = ".*-kayron$"
+		replacement   = "kayron"
 		target_label  = "service"
 	}
 
@@ -71,6 +71,14 @@ prometheus.relabel "create_ecs_labels" {
 		source_labels = ["dimension_ServiceName"]
 		regex         = ".*otel-collector.*"
 		replacement   = "otel-collector"
+		target_label  = "service"
+	}
+
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_ServiceName"]
+		regex         = ".*-graphql$"
+		replacement   = "graphql"
 		target_label  = "service"
 	}
 

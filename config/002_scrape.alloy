@@ -22,6 +22,19 @@ prometheus.scrape "rds_instance" {
 	forward_to = [prometheus.relabel.create_rds_labels.receiver]
 }
 
+// The kayron component is resolved via DNS discovery. All IP addresses
+// resolving for the given discovery host will be scraped. All metrics are
+// forwarded to the relabelling processors as shown below.
+//
+//     set_env  ->  grafana_cloud
+//
+prometheus.scrape "splits_kayron" {
+	targets      = discovery.dns.kayron.targets
+	metrics_path = "/metrics"
+	job_name     = "splits_kayron"
+	forward_to   = [prometheus.relabel.set_env.receiver]
+}
+
 // The server component is resolved via DNS discovery. All IP addresses
 // resolving for the given discovery host will be scraped. All metrics are
 // forwarded to the relabelling processors as shown below.
