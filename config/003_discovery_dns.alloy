@@ -4,6 +4,12 @@ discovery.dns "kayron" {
 	port  = sys.env("KAYRON_DISCOVERY_PORT")
 }
 
+discovery.dns "pulsar" {
+	type  = "A"
+	names = [sys.env("PULSAR_DISCOVERY_HOST")]
+	port  = sys.env("PULSAR_DISCOVERY_PORT")
+}
+
 discovery.dns "server" {
 	type  = "A"
 	names = [sys.env("SERVER_DISCOVERY_HOST")]

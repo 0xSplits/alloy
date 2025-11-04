@@ -35,6 +35,19 @@ prometheus.scrape "splits_kayron" {
 	forward_to   = [prometheus.relabel.set_env.receiver]
 }
 
+// The pulsar component is resolved via DNS discovery. All IP addresses
+// resolving for the given discovery host will be scraped. All metrics are
+// forwarded to the relabelling processors as shown below.
+//
+//     set_env  ->  grafana_cloud
+//
+prometheus.scrape "splits_pulsar" {
+	targets      = discovery.dns.pulsar.targets
+	metrics_path = "/metrics"
+	job_name     = "splits_pulsar"
+	forward_to   = [prometheus.relabel.set_env.receiver]
+}
+
 // The server component is resolved via DNS discovery. All IP addresses
 // resolving for the given discovery host will be scraped. All metrics are
 // forwarded to the relabelling processors as shown below.
