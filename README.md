@@ -35,6 +35,8 @@ Alloy container.
 - `PROMETHEUS_USERNAME` - the basic auth username of the Grafana Cloud metrics backend
 - `KAYRON_DISCOVERY_HOST` - the host name of the DNS discovery service for the kayron component
 - `KAYRON_DISCOVERY_HOST` - the port number of the kayron components
+- `PULSAR_DISCOVERY_HOST` - the host name of the DNS discovery service for the pulsar component
+- `PULSAR_DISCOVERY_HOST` - the port number of the pulsar components
 - `SERVER_DISCOVERY_HOST` - the host name of the DNS discovery service for the server component
 - `SERVER_DISCOVERY_PORT` - the port number of the server components
 - `SPECTA_DISCOVERY_HOST` - the host name of the DNS discovery service for the specta component
