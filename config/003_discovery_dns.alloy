@@ -1,3 +1,9 @@
+discovery.dns "indexing" {
+	type  = "A"
+	names = [sys.env("INDEXING_DISCOVERY_HOST")]
+	port  = sys.env("INDEXING_DISCOVERY_PORT")
+}
+
 discovery.dns "kayron" {
 	type  = "A"
 	names = [sys.env("KAYRON_DISCOVERY_HOST")]
