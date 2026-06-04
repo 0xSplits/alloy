@@ -27,43 +27,48 @@ jobs:
           version="$(grep -Eo 'grafana/alloy:[^ ]+' Dockerfile | cut -d: -f2)"
           echo "version=${version}" >> "$GITHUB_OUTPUT"
 
+      - name: "Install Alloy"
+        run: |
+          version="${{ steps.alloy.outputs.version }}"
+          curl -fsSL -o alloy.zip \
+            "https://github.com/grafana/alloy/releases/download/${version}/alloy-linux-amd64.zip"
+          unzip -q alloy.zip
+          binary="$(find . -maxdepth 1 -type f -name 'alloy-linux-amd64*' | head -n1)"
+          sudo install -m 0755 "${binary}" /usr/local/bin/alloy
+          rm -f alloy.zip "${binary}"
+          alloy --version
+
       # alloy fmt operates on a single file, so we iterate. The -t flag makes fmt
       # exit non-zero when a file is not formatted correctly without writing any
       # changes, which is exactly what we want for a check.
       - name: "Check Formatting"
         run: |
-          docker run --rm --entrypoint sh \
-            -v "${PWD}/config:/config" \
-            "grafana/alloy:${{ steps.alloy.outputs.version }}" -c '
-              rc=0
-              for f in $(find /config -name "*.alloy"); do
-                if ! alloy fmt -t "$f"; then
-                  echo "not formatted: $f (run: alloy fmt -w $f)"
-                  rc=1
-                fi
-              done
-              exit $rc
-            '
+          rc=0
+          while IFS= read -r f; do
+            if ! alloy fmt -t "$f"; then
+              echo "not formatted: $f (fix with: alloy fmt -w $f)"
+              rc=1
+            fi
+          done < <(find config -type f -name '*.alloy')
+          exit $rc
 
       # Validate the whole config directory at once, since the processor pipeline
       # references components across files. The env vars below are dummy values
       # that only need to be present for sys.env() references to resolve; validate
       # checks config structure and does not connect to any of these endpoints.
       - name: "Validate Configuration"
-        run: |
-          docker run --rm \
-            -v "${PWD}/config:/config" \
-            -e AWS_REGION="us-west-2" \
-            -e ENVIRONMENT="ci" \
-            -e GRAFANA_CLOUD_API_KEY="ci" \
-            -e PROMETHEUS_REMOTE_WRITE_URL="https://example.com" \
-            -e PROMETHEUS_USERNAME="ci" \
-            -e KAYRON_DISCOVERY_HOST="kayron" \
-            -e KAYRON_DISCOVERY_PORT="8080" \
-            -e SERVER_DISCOVERY_HOST="server" \
-            -e SERVER_DISCOVERY_PORT="8080" \
-            -e SPECTA_DISCOVERY_HOST="specta" \
-            -e SPECTA_DISCOVERY_PORT="8080" \
-            -e WORKER_DISCOVERY_HOST="worker" \
-            -e WORKER_DISCOVERY_PORT="8080" \
-            "grafana/alloy:${{ steps.alloy.outputs.version }}" validate /config
+        env:
+          AWS_REGION: "us-west-2"
+          ENVIRONMENT: "ci"
+          GRAFANA_CLOUD_API_KEY: "ci"
+          PROMETHEUS_REMOTE_WRITE_URL: "https://example.com"
+          PROMETHEUS_USERNAME: "ci"
+          KAYRON_DISCOVERY_HOST: "kayron"
+          KAYRON_DISCOVERY_PORT: "8080"
+          SERVER_DISCOVERY_HOST: "server"
+          SERVER_DISCOVERY_PORT: "8080"
+          SPECTA_DISCOVERY_HOST: "specta"
+          SPECTA_DISCOVERY_PORT: "8080"
+          WORKER_DISCOVERY_HOST: "worker"
+          WORKER_DISCOVERY_PORT: "8080"
+        run: alloy validate config/
