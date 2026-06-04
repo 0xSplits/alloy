@@ -22,6 +22,18 @@ prometheus.scrape "rds_instance" {
 	forward_to = [prometheus.relabel.create_rds_labels.receiver]
 }
 
+// The ElastiCache nodes are resolved via CloudWatch discovery. All cache
+// clusters resolving for the given discovery type will be scraped. All metrics
+// are forwarded to the relabelling processors as shown below.
+//
+//     create_elasticache_labels  ->  delete_cloudwatch_labels  ->  set_env  ->  grafana_cloud
+//
+prometheus.scrape "elasticache" {
+	targets    = prometheus.exporter.cloudwatch.elasticache.targets
+	job_name   = "elasticache"
+	forward_to = [prometheus.relabel.create_elasticache_labels.receiver]
+}
+
 // The indexing component is resolved via DNS discovery. All IP addresses
 // resolving for the given discovery host will be scraped. All metrics are
 // forwarded to the relabelling processors as shown below.

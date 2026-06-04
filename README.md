@@ -45,7 +45,8 @@ Alloy container.
 ### Discovery
 
 We are using the [CloudWatch Exporter] for metrics discovery of managed AWS
-services like ECS containers and RDS instances. Note that it is best practice to
+services like ECS containers, RDS instances, and ElastiCache (Redis) clusters.
+Note that it is best practice to
 filter for AWS resource tags, e.g. `environment`, so that we can process metrics
 for the environment that those metrics are associated with. Also note that this
 requires the respective AWS resources to be tagged accordingly. Using the AWS
