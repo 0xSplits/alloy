@@ -83,3 +83,77 @@ prometheus.exporter.cloudwatch "rds_instance" {
 		}
 	}
 }
+
+prometheus.exporter.cloudwatch "elasticache" {
+	sts_region = sys.env("AWS_REGION")
+
+	discovery {
+		type                        = "AWS/ElastiCache"
+		regions                     = [sys.env("AWS_REGION")]
+		dimension_name_requirements = ["CacheClusterId"]
+		search_tags                 = {
+			"environment" = sys.env("ENVIRONMENT"),
+		}
+
+		// Gauges. We track the average and maximum to surface both steady state
+		// and short lived spikes that can drive failovers or evictions.
+
+		metric {
+			name       = "DatabaseMemoryUsagePercentage"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "FreeableMemory"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "EngineCPUUtilization"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "CurrConnections"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "SwapUsage"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "ReplicationLag"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		// Counters. CloudWatch reports these as a sum over the period, so we must
+		// scrape the Sum statistic for the hit rate and eviction panels to be
+		// accurate. Scraping Average here would understate the real volume.
+
+		metric {
+			name       = "CacheHits"
+			statistics = ["Sum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "CacheMisses"
+			statistics = ["Sum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "Evictions"
+			statistics = ["Sum"]
+			period     = "5m"
+		}
+	}
+}

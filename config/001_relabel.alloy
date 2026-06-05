@@ -124,3 +124,22 @@ prometheus.relabel "create_rds_labels" {
 
 	forward_to = [prometheus.relabel.delete_cloudwatch_labels.receiver]
 }
+
+// Create labels based on ElastiCache dimensions to make it easier for certain
+// dashboard queries. Like RDS, there is only one logical Redis cluster per
+// environment backing the server, so we apply a single service label. The
+// per-node identity (primary vs replica) is preserved via the
+// dimension_CacheClusterId label that the CloudWatch exporter emits, so the
+// dashboard can break the two nodes apart without us baking a static role label
+// that would become wrong after a failover.
+prometheus.relabel "create_elasticache_labels" {
+	rule {
+		action        = "replace"
+		source_labels = ["dimension_CacheClusterId"]
+		regex         = ".*"
+		replacement   = "server"
+		target_label  = "service"
+	}
+
+	forward_to = [prometheus.relabel.delete_cloudwatch_labels.receiver]
+}
