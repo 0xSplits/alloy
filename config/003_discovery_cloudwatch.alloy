@@ -81,6 +81,24 @@ prometheus.exporter.cloudwatch "rds_instance" {
 			statistics = ["Average", "Maximum"]
 			period     = "5m"
 		}
+
+		metric {
+			name       = "ReadIOPS"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "WriteIOPS"
+			statistics = ["Average", "Maximum"]
+			period     = "5m"
+		}
+
+		metric {
+			name       = "BurstBalance"
+			statistics = ["Average", "Minimum"]
+			period     = "5m"
+		}
 	}
 }
 
