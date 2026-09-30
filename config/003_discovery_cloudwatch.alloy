@@ -95,8 +95,8 @@ prometheus.exporter.cloudwatch "rds_instance" {
 		}
 
 		metric {
-			name       = "BurstBalance"
-			statistics = ["Average", "Minimum"]
+			name       = "DiskQueueDepth"
+			statistics = ["Average", "Maximum"]
 			period     = "5m"
 		}
 	}
